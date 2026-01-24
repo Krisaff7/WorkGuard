@@ -25,19 +25,19 @@ WorkGuard est une application mobile robuste conçue pour aider les professionne
 ## 🚀 Installation et Lancement
 
 1. **Cloner le projet**
-\```bash
+```bash
 git clone [https://github.com/Krisaff7/WorkGuard.git](https://github.com/Krisaff7/WorkGuard.git)
-\```
+```
 
 2. **Installer les dépendances**
-\```bash
+```bash
 npm install
-\```
+```
 
 3. **Lancer l'application**
-\```bash
+```bash
 npx react-native run-android
-\```
+```
 
 ---
 
@@ -48,6 +48,6 @@ Développé durant ma formation à l'**IFRI**, WorkGuard démontre ma capacité 
 
 ## 📧 Contact
 **Kris Affokpon (Krisaff7)**
-- LinkedIn : [Lien vers ton profil]
+- LinkedIn : www.linkedin.com/in/mahouton-kris-affokpon-12811937a
 - Email : affokponkris4@gmail.com
 -
