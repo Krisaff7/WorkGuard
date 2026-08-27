@@ -18,7 +18,7 @@ export const StatsRow = ({ monthName, monthTotal, yearTotal, remaining }: StatsR
             </View>
             <View style={styles.card}>
                 <Text style={styles.value}>{yearTotal}</Text>
-                <Text style={styles.label}>TOTAL 2026</Text>
+                <Text style={styles.label}>TOTAL PÉRIODE</Text>
             </View>
             <View style={styles.card}>
                 <Text style={[styles.value, { color: Colors.success }]}>{remaining}</Text>

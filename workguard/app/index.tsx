@@ -3,7 +3,7 @@ import { View, StyleSheet, ScrollView, Alert, ActivityIndicator } from 'react-na
 import { StatusBar } from 'expo-status-bar';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Colors } from '../src/constants/Colors';
-import { getAnnualTotal, getMonthlyStats, addLog, getLogs, deleteLog, initDB, resetHoursCounter } from '../src/db/db';
+import { getActiveCycleTotal, getCurrentMonthTotal, addLog, getAllLogs, deleteLog, initDB, resetHoursCounter } from '../src/db/db';
 import { DashboardHeader } from '../src/components/DashboardHeader';
 import { ProgressCard } from '../src/components/ProgressCard';
 import { StatsRow } from '../src/components/StatsRow';
@@ -15,7 +15,7 @@ const ANNUAL_CAP = 964;
 export default function Dashboard() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [annualTotal, setAnnualTotal] = useState(0);
+  const [cycleTotal, setCycleTotal] = useState(0);
   const [monthlyTotal, setMonthlyTotal] = useState(0);
   const [logs, setLogs] = useState<any[]>([]);
 
@@ -24,23 +24,18 @@ export default function Dashboard() {
     try {
       await initDB();
       const now = new Date();
-      const year = now.getFullYear();
 
-      // Annual Stats
-      const annual = await getAnnualTotal(year);
-      setAnnualTotal(annual);
+      // Cycle Stats (continuous multi-year until reset)
+      const cycle = await getActiveCycleTotal();
+      setCycleTotal(cycle);
 
-      // Monthly Stats
-      const monthIndex = now.getMonth(); // 0-11
-      const monthStats = await getMonthlyStats(year);
+      // Current Month Stats
+      const monthTotal = await getCurrentMonthTotal(now.getFullYear(), now.getMonth() + 1);
+      setMonthlyTotal(monthTotal);
 
-      const currentMonthStr = (monthIndex + 1).toString().padStart(2, '0');
-      const currentMonthStat = monthStats.find((s: any) => s.month === currentMonthStr);
-      setMonthlyTotal(currentMonthStat?.total || 0);
-
-      // Logs
-      const recentLogs = await getLogs(year);
-      setLogs(recentLogs);
+      // All Historical Logs
+      const allLogs = await getAllLogs();
+      setLogs(allLogs);
 
     } catch (e) {
       console.error(e);
@@ -78,8 +73,7 @@ export default function Dashboard() {
           style: "destructive",
           onPress: async () => {
             try {
-              const currentYear = new Date().getFullYear();
-              await resetHoursCounter(currentYear);
+              await resetHoursCounter();
               await loadData();
               Alert.alert("Succès", "Compteur réinitialisé à 0h. L'historique reste intact.");
             } catch (e) {
@@ -109,13 +103,12 @@ export default function Dashboard() {
     );
   };
 
-  if (loading && annualTotal === 0) {
+  if (loading && cycleTotal === 0 && logs.length === 0) {
     return <View style={styles.center}><ActivityIndicator size="large" color={Colors.primary} /></View>;
   }
 
-  const currentYear = new Date().getFullYear();
   const currentMonthName = new Date().toLocaleString('fr-FR', { month: 'long' });
-  const remaining = Math.max(0, ANNUAL_CAP - annualTotal);
+  const remaining = Math.max(0, ANNUAL_CAP - cycleTotal);
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -123,15 +116,14 @@ export default function Dashboard() {
       <DashboardHeader />
 
       <ProgressCard
-        year={currentYear}
-        currentHours={annualTotal}
+        currentHours={cycleTotal}
         maxHours={ANNUAL_CAP}
       />
 
       <StatsRow
         monthName={currentMonthName}
         monthTotal={monthlyTotal}
-        yearTotal={annualTotal}
+        yearTotal={cycleTotal}
         remaining={remaining}
       />
 

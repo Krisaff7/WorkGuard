@@ -51,12 +51,12 @@ export const deleteLog = async (id: number) => {
     }
 };
 
-export const getResetId = async (year: number): Promise<number> => {
+export const getResetId = async (): Promise<number> => {
     try {
         const db = await getDB();
         const res = await db.getFirstAsync<{ value: string }>(
             'SELECT value FROM settings WHERE key = ?',
-            `reset_id_${year}`
+            'last_reset_id'
         );
         return res ? parseInt(res.value, 10) || 0 : 0;
     } catch (error) {
@@ -65,17 +65,16 @@ export const getResetId = async (year: number): Promise<number> => {
     }
 };
 
-export const resetHoursCounter = async (year: number) => {
+export const resetHoursCounter = async (_year?: number) => {
     try {
         const db = await getDB();
         const maxRes = await db.getFirstAsync<{ maxId: number | null }>(
-            'SELECT MAX(id) as maxId FROM logs WHERE date LIKE ?',
-            `${year}-%`
+            'SELECT MAX(id) as maxId FROM logs'
         );
         const lastId = maxRes?.maxId || 0;
         await db.runAsync(
             'INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)',
-            `reset_id_${year}`,
+            'last_reset_id',
             lastId.toString()
         );
     } catch (error) {
@@ -84,34 +83,46 @@ export const resetHoursCounter = async (year: number) => {
     }
 };
 
-export const getLogs = async (year: number) => {
+export const getAllLogs = async () => {
     try {
         const db = await getDB();
-        const start = `${year}-01-01`;
-        const end = `${year}-12-31`;
         return await db.getAllAsync<{ id: number; date: string; hours: number; type: string }>(
-            'SELECT * FROM logs WHERE date BETWEEN ? AND ? ORDER BY date DESC, id DESC',
-            start,
-            end
+            'SELECT * FROM logs ORDER BY date DESC, id DESC'
         );
     } catch (error) {
-        console.error('Error getting logs:', error);
+        console.error('Error getting all logs:', error);
         return [];
+    }
+};
+
+export const getLogs = async (_year?: number) => {
+    return await getAllLogs();
+};
+
+export const getCurrentMonthTotal = async (year: number, month: number): Promise<number> => {
+    try {
+        const db = await getDB();
+        const monthStr = `${year}-${month.toString().padStart(2, '0')}`;
+        const result = await db.getFirstAsync<{ total: number }>(
+            'SELECT SUM(hours) as total FROM logs WHERE date LIKE ?',
+            `${monthStr}-%`
+        );
+        return result?.total || 0;
+    } catch (error) {
+        console.error('Error getting current month total:', error);
+        return 0;
     }
 };
 
 export const getMonthlyStats = async (year: number) => {
     try {
         const db = await getDB();
-        const resetId = await getResetId(year);
-        // Return sum grouped by month for the given year since reset
         return await db.getAllAsync<{ month: string; total: number }>(
             `SELECT strftime('%m', date) as month, SUM(hours) as total 
              FROM logs 
-             WHERE date LIKE ? AND id > ?
+             WHERE date LIKE ?
              GROUP BY month`,
-            `${year}-%`,
-            resetId
+            `${year}-%`
         );
     } catch (error) {
         console.error('Error getting monthlyStats:', error);
@@ -119,18 +130,21 @@ export const getMonthlyStats = async (year: number) => {
     }
 };
 
-export const getAnnualTotal = async (year: number) => {
+export const getActiveCycleTotal = async (): Promise<number> => {
     try {
         const db = await getDB();
-        const resetId = await getResetId(year);
+        const resetId = await getResetId();
         const result = await db.getFirstAsync<{ total: number }>(
-            'SELECT SUM(hours) as total FROM logs WHERE date LIKE ? AND id > ?',
-            `${year}-%`,
+            'SELECT SUM(hours) as total FROM logs WHERE id > ?',
             resetId
         );
         return result?.total || 0;
     } catch (error) {
-        console.error('Error getting annual total:', error);
+        console.error('Error getting active cycle total:', error);
         return 0;
     }
+};
+
+export const getAnnualTotal = async (_year?: number) => {
+    return await getActiveCycleTotal();
 };

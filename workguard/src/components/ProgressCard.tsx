@@ -3,19 +3,22 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Colors } from '../constants/Colors';
 
 interface ProgressCardProps {
-    year: number;
+    year?: number;
     currentHours: number;
     maxHours: number;
 }
 
-export const ProgressCard = ({ year, currentHours, maxHours }: ProgressCardProps) => {
+export const ProgressCard = ({ currentHours, maxHours }: ProgressCardProps) => {
     const progress = Math.min(Math.max(currentHours / maxHours, 0), 1);
+    const isExceeded = currentHours > maxHours;
 
     return (
         <View style={styles.card}>
             <View style={styles.header}>
-                <Text style={styles.title}>Progression annuelle {year}</Text>
-                <Text style={styles.value}>{currentHours} / {maxHours} h</Text>
+                <Text style={styles.title}>Progression du quota</Text>
+                <Text style={[styles.value, isExceeded && { color: Colors.primary }]}>
+                    {currentHours} / {maxHours} h
+                </Text>
             </View>
             <View style={styles.track}>
                 <View style={[styles.bar, { width: `${progress * 100}%` }]} />
