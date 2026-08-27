@@ -145,6 +145,17 @@ export const getActiveCycleTotal = async (): Promise<number> => {
     }
 };
 
+export const clearAllData = async () => {
+    try {
+        const db = await getDB();
+        await db.runAsync('DELETE FROM logs');
+        await db.runAsync('DELETE FROM settings');
+    } catch (error) {
+        console.error('Error clearing data:', error);
+        throw error;
+    }
+};
+
 export const getAnnualTotal = async (_year?: number) => {
     return await getActiveCycleTotal();
 };

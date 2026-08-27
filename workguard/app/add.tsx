@@ -71,6 +71,7 @@ export default function AddScreen() {
                         onChangeText={setHours}
                         keyboardType="numeric"
                         placeholder="Ex: 12"
+                        placeholderTextColor={Colors.textSecondary}
                     />
                 </View>
 
@@ -97,14 +98,17 @@ const styles = StyleSheet.create({
         paddingBottom: 40,
     },
     formContainer: {
+        width: '100%',
+        maxWidth: 600,
+        alignSelf: 'center',
         paddingTop: 10,
     },
     header: {
-        marginBottom: 30,
+        marginBottom: 24,
         alignItems: 'center',
     },
     title: {
-        fontSize: 24,
+        fontSize: 22,
         fontWeight: 'bold',
         color: Colors.text,
     },
@@ -120,7 +124,7 @@ const styles = StyleSheet.create({
     input: {
         backgroundColor: Colors.card,
         padding: 16,
-        borderRadius: 12,
+        borderRadius: 14,
         fontSize: 16,
         borderWidth: 1,
         borderColor: Colors.border,
@@ -136,7 +140,7 @@ const styles = StyleSheet.create({
     },
     button: {
         padding: 16,
-        borderRadius: 12,
+        borderRadius: 14,
         alignItems: 'center',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },

@@ -115,29 +115,31 @@ export default function Dashboard() {
       <StatusBar style="light" />
       <DashboardHeader />
 
-      <ProgressCard
-        currentHours={cycleTotal}
-        maxHours={ANNUAL_CAP}
-      />
+      <View style={styles.responsiveWrapper}>
+        <ProgressCard
+          currentHours={cycleTotal}
+          maxHours={ANNUAL_CAP}
+        />
 
-      <StatsRow
-        monthName={currentMonthName}
-        monthTotal={monthlyTotal}
-        yearTotal={cycleTotal}
-        remaining={remaining}
-      />
+        <StatsRow
+          monthName={currentMonthName}
+          monthTotal={monthlyTotal}
+          yearTotal={cycleTotal}
+          remaining={remaining}
+        />
 
-      <ActionButtons
-        onAddToday={handleAddToday}
-        onAddMissed={() => router.push('/add' as any)}
-        onAddManual={() => router.push('/add' as any)}
-        onResetHours={handleResetHours}
-      />
+        <ActionButtons
+          onAddToday={handleAddToday}
+          onAddMissed={() => router.push('/add' as any)}
+          onAddManual={() => router.push('/add' as any)}
+          onResetHours={handleResetHours}
+        />
 
-      <HistoryList
-        logs={logs}
-        onDelete={handleDelete}
-      />
+        <HistoryList
+          logs={logs}
+          onDelete={handleDelete}
+        />
+      </View>
     </ScrollView>
   );
 }
@@ -150,6 +152,11 @@ const styles = StyleSheet.create({
   content: {
     padding: 20,
     paddingBottom: 40,
+  },
+  responsiveWrapper: {
+    width: '100%',
+    maxWidth: 640,
+    alignSelf: 'center',
   },
   center: {
     flex: 1,

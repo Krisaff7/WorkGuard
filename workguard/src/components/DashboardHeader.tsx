@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { Colors } from '../constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -10,43 +10,52 @@ interface DashboardHeaderProps {
 export const DashboardHeader = ({ onBack }: DashboardHeaderProps) => {
     return (
         <View style={styles.container}>
-            <View style={styles.logoContainer}>
+            <View style={styles.innerContainer}>
                 {onBack && (
-                    <TouchableOpacity onPress={onBack} style={styles.backButton}>
+                    <TouchableOpacity onPress={onBack} style={styles.backButton} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
                         <Ionicons name="arrow-back" size={24} color="white" />
                     </TouchableOpacity>
                 )}
-                <View style={styles.iconBox}>
-                    <Ionicons name="shield-outline" size={20} color="white" />
+                <View style={styles.centerBox}>
+                    <View style={styles.iconBox}>
+                        <Ionicons name="shield-outline" size={20} color="white" />
+                    </View>
+                    <Text style={styles.title}>WorkGuard</Text>
                 </View>
-                <Text style={styles.title}>WorkGuard</Text>
             </View>
         </View>
     );
-}
+};
 
 const styles = StyleSheet.create({
     container: {
         backgroundColor: Colors.primary,
-        paddingTop: 60,
-        paddingBottom: 30,
-        alignItems: 'center',
+        paddingTop: Platform.OS === 'ios' ? 56 : 48,
+        paddingBottom: 24,
+        paddingHorizontal: 20,
         marginHorizontal: -20,
         marginTop: -20,
         marginBottom: 20,
     },
-    logoContainer: {
+    innerContainer: {
+        width: '100%',
+        maxWidth: 640,
+        alignSelf: 'center',
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 12,
-        position: 'relative',
-        width: '100%',
         justifyContent: 'center',
+        position: 'relative',
+    },
+    centerBox: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10,
     },
     backButton: {
         position: 'absolute',
-        left: 20,
-        padding: 8,
+        left: 0,
+        padding: 6,
+        zIndex: 10,
     },
     iconBox: {
         width: 36,
@@ -60,5 +69,6 @@ const styles = StyleSheet.create({
         fontSize: 22,
         fontWeight: 'bold',
         color: 'white',
+        letterSpacing: 0.3,
     },
 });
