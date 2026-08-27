@@ -7,9 +7,10 @@ interface ActionButtonsProps {
     onAddToday: () => void;
     onAddMissed: () => void;
     onAddManual: () => void;
+    onResetHours: () => void;
 }
 
-export const ActionButtons = ({ onAddToday, onAddMissed, onAddManual }: ActionButtonsProps) => {
+export const ActionButtons = ({ onAddToday, onAddMissed, onAddManual, onResetHours }: ActionButtonsProps) => {
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.mainButton} onPress={onAddToday}>
@@ -31,6 +32,11 @@ export const ActionButtons = ({ onAddToday, onAddMissed, onAddManual }: ActionBu
             <TouchableOpacity style={styles.secondaryButton} onPress={onAddManual}>
                 <Ionicons name="add-circle-outline" size={20} color={Colors.text} style={styles.icon} />
                 <Text style={styles.secondaryText}>Ajouter des heures manuellement</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.secondaryButton} onPress={onResetHours} activeOpacity={0.7}>
+                <Ionicons name="refresh-outline" size={20} color={Colors.text} style={styles.icon} />
+                <Text style={styles.secondaryText}>Réinitialiser le compteur d'heures</Text>
             </TouchableOpacity>
         </View>
     );

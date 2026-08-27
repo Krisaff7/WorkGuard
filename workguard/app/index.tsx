@@ -3,7 +3,7 @@ import { View, StyleSheet, ScrollView, Alert, ActivityIndicator } from 'react-na
 import { StatusBar } from 'expo-status-bar';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Colors } from '../src/constants/Colors';
-import { getAnnualTotal, getMonthlyStats, addLog, getLogs, deleteLog, initDB } from '../src/db/db';
+import { getAnnualTotal, getMonthlyStats, addLog, getLogs, deleteLog, initDB, resetHoursCounter } from '../src/db/db';
 import { DashboardHeader } from '../src/components/DashboardHeader';
 import { ProgressCard } from '../src/components/ProgressCard';
 import { StatsRow } from '../src/components/StatsRow';
@@ -67,6 +67,30 @@ export default function Dashboard() {
     }
   };
 
+  const handleResetHours = () => {
+    Alert.alert(
+      "Réinitialiser le compteur",
+      "Voulez-vous remettre le compteur d'heures à 0 ? Tout votre historique sera conservé.",
+      [
+        { text: "Annuler", style: "cancel" },
+        {
+          text: "Réinitialiser",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              const currentYear = new Date().getFullYear();
+              await resetHoursCounter(currentYear);
+              await loadData();
+              Alert.alert("Succès", "Compteur réinitialisé à 0h. L'historique reste intact.");
+            } catch (e) {
+              Alert.alert("Erreur", "Impossible de réinitialiser le compteur.");
+            }
+          }
+        }
+      ]
+    );
+  };
+
   const handleDelete = async (id: number) => {
     Alert.alert(
       "Supprimer",
@@ -115,6 +139,7 @@ export default function Dashboard() {
         onAddToday={handleAddToday}
         onAddMissed={() => router.push('/add' as any)}
         onAddManual={() => router.push('/add' as any)}
+        onResetHours={handleResetHours}
       />
 
       <HistoryList
